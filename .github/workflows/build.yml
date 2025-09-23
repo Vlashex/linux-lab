@@ -10,7 +10,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Install deps
         run: sudo apt-get update && sudo apt-get install -y build-essential cmake debhelper
@@ -25,7 +25,9 @@ jobs:
         run: make deb
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: kubsh-deb
           path: ../kubsh_*.deb
+          if-no-files-found: error
+          compression-level: 9
