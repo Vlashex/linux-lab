@@ -1,0 +1,7 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: kubsh
+Source: https://github.com/yourname/kubsh
+
+Files: \*
+Copyright: 2025 Your Name <you@example.com>
+License: MIT
