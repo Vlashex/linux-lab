@@ -18,9 +18,6 @@ jobs:
       - name: Build project
         run: make build
 
-      - name: Run checks
-        run: ./build/bin/kubsh --version || true
-
       - name: Build deb package
         run: make deb
 
