@@ -21,6 +21,9 @@ jobs:
       - name: Build deb package
         run: make deb
 
+      - name: List files
+        run: ls -la *.deb ../*.deb || true
+
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
