@@ -39,8 +39,19 @@ set(HEADERS
 add_executable(kubsh ${SOURCES} ${HEADERS})
 target_include_directories(kubsh PRIVATE ${CMAKE_SOURCE_DIR}/src)
 
-
 # Устанавливаем бинарник в bin/
 set_target_properties(kubsh PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
 )
+
+# Установка бинарника в систему
+install(TARGETS kubsh
+    RUNTIME DESTINATION bin
+    COMPONENT runtime)
+
+# Установка документации (если есть README)
+if(EXISTS "${CMAKE_SOURCE_DIR}/README.md")
+    install(FILES README.md
+        DESTINATION share/doc/kubsh
+        COMPONENT documentation)
+endif()
