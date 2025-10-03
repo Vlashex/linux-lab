@@ -1,13 +1,14 @@
-name: Find Artifacts
+name: Test CLI (latest artifact)
 
 on:
   workflow_dispatch: {}
 
 jobs:
-  list-artifacts:
+  test-latest:
     runs-on: ubuntu-latest
     steps:
-      - name: List all artifacts in repo
+      - name: Get latest artifact id
+        id: get-artifact
         uses: actions/github-script@v7
         with:
           script: |
@@ -16,7 +17,18 @@ jobs:
               repo: context.repo.repo,
               per_page: 100
             })
-            console.log("Found artifacts:")
-            for (const a of artifacts.data.artifacts) {
-              console.log(`- ${a.name} (id=${a.id}, size=${a.size_in_bytes}B, expired=${a.expired})`)
+            const found = artifacts.data.artifacts
+              .filter(a => a.name === "kubsh-deb" && !a.expired)
+              .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0]
+            if (!found) {
+              core.setFailed("No artifact named kubsh-deb found")
+            } else {
+              core.setOutput("artifact_id", found.id)
+              console.log(`Latest artifact: ${found.name} (id=${found.id}) created_at=${found.created_at}`)
             }
+
+      - name: Download latest artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: kubsh-deb
+          path: ./artifact
