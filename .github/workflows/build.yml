@@ -1,4 +1,4 @@
-name: Build and Package
+name: Build and Test CLI
 
 on:
   push:
@@ -11,22 +11,25 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      - name: Install deps
-        run: sudo apt-get update && sudo apt-get install -y build-essential cmake debhelper
-
-      - name: Build project
-        run: make build
-
-      - name: Build deb package
-        run: make deb
-
-      - name: List files
-        run: ls -la *.deb ../*.deb || true
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
+      - run: make build
+      - run: make deb
+      - uses: actions/upload-artifact@v4
         with:
           name: kubsh-deb
           path: kubsh_*.deb
-          if-no-files-found: error
+
+  test:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: kubsh-deb
+          path: ./artifact
+
+      - run: ls -la ./artifact
+
+      - run: |
+          docker run --rm \
+            -v ${{ github.workspace }}/artifact:/mnt \
+            tyvik/kubsh_test:master
