@@ -1,0 +1,27 @@
+name: Test CLI
+
+on:
+  workflow_run:
+    workflows: ["Build and Package"]
+    types:
+      - completed
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: kubsh-deb
+          path: ./artifact
+
+      - name: List downloaded files
+        run: ls -la ./artifact
+
+      - name: Run tests inside docker
+        run: |
+          docker run --rm \
+            -v ${{ github.workspace }}/artifact:/mnt \
+            tyvik/kubsh_test:master
